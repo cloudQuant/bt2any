@@ -7,6 +7,19 @@ This repository is an **agent Skill**: one canonical `SKILL.md` plus references,
 scripts, and examples. It works across CodeBuddy, Claude Code, OpenAI Codex, and Kiro
 via the included installer.
 
+> [!IMPORTANT]
+> **This skill is built on top of the `back_trader` project and cannot succeed without
+> it.** Every language profile documents a port that links
+> `back_trader`'s native C ABI (`libback_trader_c_abi`) or its SWIG/pybind bindings,
+> uses its `Cerebro` / `Broker` / `Strategy` / indicators / analyzers, and is built/run
+> with its harness and runner scripts. bt2any itself ships **only** the conversion
+> methodology, contracts, source-analysis scripts and a parity validator — **no
+> backtest runtime, no engine, no language bindings**. Without a working `back_trader`
+> checkout (core + bindings + runners) available, the skill can only produce a
+> `scaffold-only` port; it cannot compile, run, or prove parity. See
+> [Requirements](#requirements-back_trader-is-mandatory) and
+> [What it does NOT provide](#what-it-does-not-provide) below.
+
 ## 16 target languages
 
 `cpp` · `java` · `go` · `rust` · `r` · `c` · `csharp` · `julia` · `lua` · `node` ·
@@ -24,13 +37,39 @@ via the included installer.
 | Few-shot examples | 9 examples covering orders, indicators, analyzers, debugging |
 | Multi-agent install | `scripts/install.py` → `.claude/`, `.agents/`, `.codebuddy/`, `.kiro/` |
 
+## Requirements: `back_trader` is mandatory
+
+bt2any is **not** a standalone translator. A successful conversion requires all of the
+following to be present and working:
+
+- A `back_trader` checkout with the **core** (`back_trader_cpp`) and its build artifacts:
+  - C ABI shared library `build/bindings/c/libback_trader_c_abi.{dylib,so}`
+  - (for SWIG targets) generated bindings under `build/bindings/swig/<lang>/`
+  - facade packages/adapters per language (`bindings/c/adapter/<lang>/`,
+    `bindings/swig/adapter/<lang>/`)
+- The `back_trader` **runner scripts** (`scripts/run_<lang>_*_backtests.py`) and lane
+  harnesses that the language profiles reference.
+- The Python oracle strategy plus its 13-column backtest CSV, produced by
+  `back_trader` / `backtrader` conventions.
+
+Point the skill at your checkout via `config.yaml` →
+`target_framework.<lang>.root` (or the matching `BACK_TRADER_*` environment variables
+used by the runners). Set it once; profiles document the exact paths per language.
+
+**If any of the above is missing, the conversion cannot be validated.** The skill will
+mark the port `scaffold-only`, and no metric parity claim is valid.
+
 ## What it does NOT provide
 
-A target-language backtest runtime. Generated ports program against the framework you
-supply (e.g. `back_trader` C++ core, a Java strategy service, or a native backtester).
-If no framework is available, the skill produces a **scaffold-only** port with the full
-strategy logic and validation hook, and says so explicitly — it never claims parity
-without a real run.
+- **No backtest runtime, engine, or bindings** — those all come from `back_trader`.
+- No Python → target compiler. Conversion is AI-led, one strategy at a time, against
+  the real back_trader API surface documented in the language profiles.
+- No parity proof without a real run: `validate_result.py` only compares JSON that must
+  come from actually executing the port through `back_trader`.
+
+If `back_trader` is unavailable, the skill still produces a scaffold with the full
+strategy logic and validation hook, but it explicitly reports `scaffold-only` — it
+never claims parity without a real run.
 
 ## Install
 

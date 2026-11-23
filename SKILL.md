@@ -25,6 +25,12 @@ examples. When uncertain, read a reference before writing code.
 
 ## Hard constraints (non-negotiable)
 
+0. **`back_trader` is MANDATORY.** This skill is built on top of the `back_trader`
+   project. Every documented 16-language port links its C ABI / SWIG / pybind bindings,
+   uses its `Cerebro`/`Broker`/`Strategy`/indicators/analyzers, and is built/run with
+   its runners and harnesses. If a working `back_trader` checkout (core + bindings +
+   runners) is not available, you CANNOT produce a validated conversion — say so and
+   mark the result `scaffold-only`. Never claim parity without a real run through it.
 1. **One strategy at a time.** No batch conversion. Full context + validation per strategy.
 2. **Never modify the source Python strategy.** Treat it as the oracle.
 3. **Metric parity is the contract.** The target result JSON must match `py_result.json`
@@ -47,18 +53,22 @@ examples. When uncertain, read a reference before writing code.
 
 ## Capability boundary — read this first
 
-This skill produces a **semantic port + output contract + validation scaffold**.
-Whether the generated port is directly runnable depends on the target framework:
+This skill is **built on `back_trader` and cannot succeed without it**. It ships only
+the conversion methodology, contracts, source-analysis scripts and a parity validator
+— **no engine, no backtest runtime, no bindings**. All 16 language profiles document
+ports that link `back_trader`'s C ABI or SWIG/pybind bindings and are driven by its
+runners/harnesses.
 
-- **Self-contained frameworks** (e.g. a target-language backtester you already have,
-  or `back_trader`'s C ABI facade): the skill can generate a runnable port that
-  programs against that framework's API.
-- **No target framework available**: the skill generates a compilable skeleton with
-  clearly marked TODOs at the framework boundary, the full strategy logic, and a
-  validator. It must not claim the port is validated until a real run passes.
+- **With a working `back_trader` checkout** (core + bindings + runners, configured via
+  `config.yaml` → `target_framework.<lang>.root` or the `BACK_TRADER_*` env vars): you
+  can generate a real port, build/run it, and prove parity.
+- **Without it**: you can only produce a `scaffold-only` skeleton with TODOs at the
+  framework boundary. State this explicitly to the user and ask for the checkout path.
+  Do not fabricate a run, do not silently substitute a Python/pybind shim, and never
+  claim the port is validated.
 
-If a target framework is required but unavailable, say so explicitly and ask the
-user for its path/install. Do not silently substitute a Python/pybind shim.
+The validator (`validate_result.py`) only compares JSON that must come from actually
+executing the port through `back_trader` — it is not a substitute for that runtime.
 
 ## Input / Output contract
 
