@@ -1,0 +1,18 @@
+display_name: bt2any — Backtrader to Any Language
+short_description: Convert backtrader Python strategies to 16 target languages with metric parity
+version: "1.0"
+default_prompt: |
+  Convert this backtrader Python strategy into one target language. Follow SKILL.md:
+  run the Python baseline, generate context, load the target language profile and 1-3
+  examples, write the port with framework APIs, emit the 11-field result JSON, and
+  validate against py_result.json within 1e-6 tolerance. One strategy at a time.
+tags: [conversion, backtrader, quantitative-trading, backtesting, multi-language]
+context_files:
+  required: [SKILL.md, references/conversion-contract.md]
+  on_demand: [references/semantic-patterns.md, references/validation.md,
+              references/layout.md, references/languages/cpp.md,
+              references/languages/java.md, references/languages/go.md,
+              references/languages/rust.md, references/languages/r.md]
+  examples: [examples/simple_order_close.md, examples/indicators_and_lines.md,
+             examples/analyzer_parity.md, examples/debug_with_tradelogger.md]
+scripts: [analyze_source.py, validate_result.py, install.py]
