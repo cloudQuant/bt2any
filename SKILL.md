@@ -115,6 +115,7 @@ Do not advance past a gate until it passes.
 | `references/semantic-patterns.md` | When the strategy uses orders, indicators, multi-timeframe, resample, feature cache, timers |
 | `references/validation.md` | When parity fails — symptom index + repair playbook |
 | `references/layout.md` | When deciding output files/dirs |
+| `references/languages/_implementation-notes.md` | Before any port — real-implementation facts (routes, order numbers, JSON, warm-up) |
 | `references/languages/<lang>.md` | When implementing that language |
 | `examples/*.md` | Pick 1–3 via the matrix below |
 

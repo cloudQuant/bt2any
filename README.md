@@ -20,7 +20,7 @@ via the included installer.
 | Contracts | 11-field result JSON, 1e-6 tolerance, null≠0, allowed extra keys |
 | Source analysis | `scripts/analyze_source.py` (AST → `context.md` + `analysis.json`) |
 | Validation | `scripts/validate_result.py` (language-independent JSON parity check) |
-| Language profiles | `references/languages/<lang>.md` for all 16 targets |
+| Language profiles | `references/languages/<lang>.md` for all 16 targets, grounded in real `back_trader` ports (verified routing/API/build/pitfalls) + a shared `_implementation-notes.md` |
 | Few-shot examples | 9 examples covering orders, indicators, analyzers, debugging |
 | Multi-agent install | `scripts/install.py` → `.claude/`, `.agents/`, `.codebuddy/`, `.kiro/` |
 
